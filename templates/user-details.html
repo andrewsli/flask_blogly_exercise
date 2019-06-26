@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}BLOGLY TIME{% endblock %}
+
+{% block content %}
+
+    <img class="profile-pic" src="{{ user.image_url }}" alt="">
+    <p>{{ user.first_name }} {{ user.last_name }}</p>
+    <a href="/users/{{ user.id }}/edit" class="btn btn-primary btn-sm">Edit</a>
+    <a href="/users/{{ user.id }}/delete"class="btn btn-danger btn-sm">Delete</a>
+
+{% endblock %}
