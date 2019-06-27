@@ -78,3 +78,54 @@ class Post(db.Model):
     )
 
     user = db.relationship('User')
+    
+    tags = db.relationship(
+        'Tag',
+        secondary='post_tags',
+    )
+
+
+class PostTag(db.Model):
+    """class corresponding to users table"""
+
+    def __repr__(self):
+        x = self
+        return f"<post {x.post_id} tag {x.tag_id}>"
+
+    __tablename__ = "post_tags"
+
+    # create columns
+    post_id = db.Column(
+        db.Integer,
+        db.ForeignKey("posts.id"),
+        primary_key=True,
+    )
+    tag_id = db.Column(
+        db.Integer,
+        db.ForeignKey("tags.id"),
+        primary_key=True,
+    )
+
+
+class Tag(db.Model):
+
+    def __repr__(self):
+        x = self
+        return f"<tag {x.id} {x.name}>"
+
+    __tablename__ = "tags"
+
+    # create columns
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True,
+    )
+    name = db.Column(
+        db.String(30)
+    )
+
+    posts = db.relationship(
+        'Post',
+        secondary='post_tags',
+    )

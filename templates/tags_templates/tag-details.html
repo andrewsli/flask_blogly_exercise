@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}BLOGLY TIME{% endblock %}
+
+{% block content %}
+
+    <h3>{{ tag.name }}</h3>
+    <ul>
+        {% for post in tag.posts %}
+            <li><a href="/posts/{{ post.id }}">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+    <div>
+        <a href="/tags/{{ tag.id }}/edit" class="btn btn-info btn-sm">Edit</a>
+        <form class="d-inline" method="POST" action="/tags/{{ tag.id }}/delete">
+            <button class="btn btn-danger btn-sm">Delete</button>
+        </form>
+    </div>
+
+{% endblock %}

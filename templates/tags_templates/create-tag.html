@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}BLOGLY TIME{% endblock %}
+
+{% block content %}
+
+    <h3>Create a tag</h3>
+    <form method="POST">
+        Name
+        <input type="text" name="name">
+        <br>
+        <div class="mt-2">
+            <button class="btn btn-primary btn-sm">Add</button>
+            <a href="/tags" class="btn btn-secondary btn-sm">Cancel</a>
+        </div>
+    </form>
+
+{% endblock %}
