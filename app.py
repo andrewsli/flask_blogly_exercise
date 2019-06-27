@@ -1,6 +1,6 @@
 """Blogly application."""
 
-from flask import Flask, request, redirect, render_template, session, jsonify, flash
+from flask import Flask, request, redirect, render_template, flash
 from models import db, connect_db, User, Post
 from flask_debugtoolbar import DebugToolbarExtension
 import datetime
@@ -70,12 +70,9 @@ def add_user():
 def user_details(user_id):
     """passes user instance to template to display user information"""
     user = User.query.get(user_id)
+    sorted_posts = Post.query.filter_by(user_id=user_id).order_by(Post.created_at).all()
 
-    posts = user.posts
-
-    posts.sort(key=lambda x: x.created_at)
-
-    return render_template("user-details.html", user=user, sorted_posts=posts)
+    return render_template("user-details.html", user=user, sorted_posts=sorted_posts)
 
 
 @app.route('/users/<user_id>/edit')
@@ -105,11 +102,12 @@ def edit_user(user_id):
 @app.route('/users/<user_id>/delete', methods=['POST'])
 def delete_user(user_id):
     """deletes user from database, flashes message and redirects to user list"""
-    user_base_query = User.query.filter(User.id == user_id)
-    user = user_base_query.one()
+    user = User.query.get(user_id)
     flash(f"{user.first_name} {user.last_name} has been deleted!", "danger")
-    Post.query.filter(Post.user_id == user.id).delete()
-    user_base_query.delete()
+    for post in user.posts:
+        db.session.delete(post)
+    # Post.query.filter(Post.user_id == user.id).delete()
+    db.session.delete(user)
     db.session.commit()
 
     return redirect('/users')
@@ -130,7 +128,7 @@ def handle_add_post_form_submission(user_id):
     content = request.form['content']
     created_at = datetime.datetime.now()
 
-    if title == "" or content == "":
+    if not title or not content:
         flash(f'Please make sure to fill all forms.', 'danger')
         return redirect(f'/users/{user_id}/posts/new')
 
@@ -149,19 +147,21 @@ def handle_add_post_form_submission(user_id):
 
 @app.route('/posts/<post_id>')
 def post(post_id):
+    """display post details"""
     post = Post.query.get(post_id)
     return render_template('post-details.html', post=post)
 
 
 @app.route('/posts/<post_id>/edit')
 def edit_post_form(post_id):
-
+    """display post edit form"""
     post = Post.query.get(post_id)
     return render_template('edit-post.html', post=post)
 
 
 @app.route('/posts/<post_id>/edit', methods=["POST"])
 def edit_post(post_id):
+    """handle post edit form submission, redirects to editted post"""
     title = request.form['title']
     content = request.form['content']
 
@@ -176,11 +176,10 @@ def edit_post(post_id):
 
 @app.route('/posts/<post_id>/delete', methods=['POST'])
 def delete_post(post_id):
-    post_base_query = Post.query.filter(Post.id == post_id)
-    post = post_base_query.one()
-    user = post.user
+    """handles post deletion, redirects to user details"""
+    post = Post.query.get(post_id)
     flash(f'{post.title} has been deleted!', 'danger')
-    post_base_query.delete()
+    db.session.delete(post)
     db.session.commit()
 
-    return redirect(f'/users/{user.id}')
+    return redirect(f'/users/{post.user_id}')
