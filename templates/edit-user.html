@@ -12,7 +12,10 @@
         <input type="text" name="last-name" value="{{ user.last_name }}"><br><br>
         Image URL<br>
         <input type="text" name="image-url" value="{{ user.image_url }}">
-        <input class="btn btn-success btn-sm" type="submit" value="Edit">
+        <div class="mt-2">
+            <input class="btn btn-success btn-sm" type="submit" value="Edit">
+            <a href="/users" class="btn btn-secondary btn-sm">Cancel</a>
+        </div>
     </form>
 
 {% endblock %}

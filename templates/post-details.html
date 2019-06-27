@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}BLOGLY TIME{% endblock %}
+
+{% block content %}
+    <h3>{{ post.title }}</h3>
+    <p class="post-content">{{ post.content }}</p>
+    
+    <p><i>By {{ post.user.first_name }} {{ post.user.last_name }}</i></p> 
+
+    <a href="/posts/{{ post.id }}/edit" class="btn btn-info btn-sm">Edit</a>
+    <a href="/users/{{ post.user.id }}" class="btn btn-secondary btn-sm">Cancel</a>
+    <form style="display: inline;" action="/posts/{{ post.id }}/delete" method="POST" class="form-inline">
+        <button class="btn btn-danger btn-sm">Delete</button>
+    </form>
+    
+
+{% endblock %}

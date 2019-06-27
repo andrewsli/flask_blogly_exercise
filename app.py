@@ -1,8 +1,9 @@
 """Blogly application."""
 
 from flask import Flask, request, redirect, render_template, session, jsonify, flash
-from models import db, connect_db, User
+from models import db, connect_db, User, Post
 from flask_debugtoolbar import DebugToolbarExtension
+import datetime
 
 
 app = Flask(__name__)
@@ -108,10 +109,36 @@ def delete_user(user_id):
 
     return redirect('/users')
 
+
 @app.route('/users/<user_id>/posts/new')
 def add_post_form(user_id):
+    """Show form to add post for user"""
     user = User.query.get(user_id)
 
     return render_template('add-post.html', user=user)
 
-    
+
+@app.route('/users/<user_id>/posts', methods=['POST'])
+def handle_add_post_form_submission(user_id):
+    """handles post form submission"""
+    title = request.form['title']
+    content = request.form['content']
+    created_at = datetime.datetime.now()
+
+    post = Post(
+        title=title,
+        content=content,
+        created_at=created_at,
+        user_id=user_id
+    )
+    db.session.add(post)
+    db.session.commit()
+
+    flash(f'Your post {title} has been submitted.', 'success')
+    return redirect(f'/users/{user_id}')
+
+
+@app.route('/posts/<post_id>')
+def post(post_id):
+    post = Post.query.get(post_id)
+    return render_template('post-details.html', post=post)

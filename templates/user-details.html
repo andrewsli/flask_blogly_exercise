@@ -3,6 +3,14 @@
 {% block title %}BLOGLY TIME{% endblock %}
 
 {% block content %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% for category, message in messages %}
+        <p class="alert alert-{{ category }}">{{ message }}</p>
+    {% endfor %}
+
+    {% endwith %}
+
 
     <img class="profile-pic" src="{{ user.image_url }}" alt="">
 
@@ -16,7 +24,7 @@
 
     <ul>
         {% for post in user.posts %}
-        <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>>
+        <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>
         {% endfor %}
     </ul>
     <a href="/users/{{ user.id }}/posts/new" class="btn btn-primary btn-sm">Add Post</a>
