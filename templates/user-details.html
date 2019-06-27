@@ -5,8 +5,20 @@
 {% block content %}
 
     <img class="profile-pic" src="{{ user.image_url }}" alt="">
-    <p>{{ user.first_name }} {{ user.last_name }}</p>
-    <a href="/users/{{ user.id }}/edit" class="btn btn-primary btn-sm">Edit</a>
-    <a href="/users/{{ user.id }}/delete"class="btn btn-danger btn-sm">Delete</a>
+
+    <h3>{{ user.first_name }} {{ user.last_name }}</h3>
+    <a href="/users/{{ user.id }}/edit" class="btn btn-info btn-sm">Edit</a>
+    <form method="POST" action="/users/{{ user.id }}/delete">
+        <button class="btn btn-danger btn-sm">Delete</button> 
+    </form><br>
+
+    <h3>Posts</h3>
+
+    <ul>
+        {% for post in user.posts %}
+        <li><a href="/posts/{{post.id}}">{{post.title}}</a></li>>
+        {% endfor %}
+    </ul>
+    <a href="/users/{{ user.id }}/posts/new" class="btn btn-primary btn-sm">Add Post</a>
 
 {% endblock %}

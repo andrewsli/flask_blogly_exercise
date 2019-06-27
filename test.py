@@ -21,7 +21,7 @@ class MyAppIntegrationTestCase(unittest.TestCase):
             last_name='LTEST',
             image_url=None,
             id=999,
-        )  
+        )
         db.session.add(user)
         db.session.commit()
 
@@ -67,7 +67,7 @@ class MyAppIntegrationTestCase(unittest.TestCase):
         self.assertIn(b'<a href="/users/999/edit"', result.data)
 
     def test_delete_user(self):
-        result = self.client.get("/users/999/delete", follow_redirects=True)
+        result = self.client.post("/users/999/delete", follow_redirects=True)
 
         self.assertEqual(result.status_code, 200)
         self.assertNotIn(b'<a href="/users/999">', result.data)

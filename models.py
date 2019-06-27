@@ -42,3 +42,39 @@ class User(db.Model):
         default=DEFAULT_IMAGE,
         )
 
+    posts = db.relationship('Post')
+
+
+class Post(db.Model):
+    """class corresponding to posts table"""
+
+    def __repr__(self):
+        x = self
+        return f"<Post {x.id} {x.title} {x.create_at} {x.image_url} {x.user_id}>"
+    
+    __tablename__ = "posts"
+
+    # create columns
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True,
+    )
+    title = db.Column(
+        db.String(50),
+        nullable=False,
+    )
+    content = db.Column(
+        db.Text,
+        nullable=False,
+    )
+    created_at = db.Column(
+        db.DateTime,
+        nullable=False,
+    )
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id')
+    )
+
+    user = db.relationship('User')

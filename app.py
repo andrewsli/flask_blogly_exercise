@@ -15,7 +15,7 @@ debug = DebugToolbarExtension(app)
 
 
 connect_db(app)
-# db.create_all()
+db.create_all()
 
 
 @app.route('/')
@@ -97,7 +97,7 @@ def edit_user(user_id):
     return redirect(f"/users")
 
 
-@app.route('/users/<user_id>/delete')
+@app.route('/users/<user_id>/delete', methods=["POST"])
 def delete_user(user_id):
     """deletes user from database, flashes message and redirects to user list"""
     user_base_query = User.query.filter(User.id == user_id)
@@ -107,3 +107,11 @@ def delete_user(user_id):
     db.session.commit()
 
     return redirect('/users')
+
+@app.route('/users/<user_id>/posts/new')
+def add_post_form(user_id):
+    user = User.query.get(user_id)
+
+    return render_template('add-post.html', user=user)
+
+    

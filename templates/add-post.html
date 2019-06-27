@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}BLOGLY TIME{% endblock %}
+
+{% block content %}
+
+    <h3>Add Post for {{ user.first_name}} {{ user.last_name }}</h3>
+    <form action="/users/{{ user.id }}">
+        Title<br>
+        <input type="text" name="title"><br><br>
+        Content<br>
+        <textarea name="content" rows="5" cols="33"></textarea>
+        <button>Cancel</button>
+        <button formaction="/users/{{ user.id }}/posts" formmethod="POST">Add</button>
+    </form>
+
+{% endblock %}
