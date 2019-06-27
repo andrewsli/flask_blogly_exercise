@@ -71,7 +71,11 @@ def user_details(user_id):
     """passes user instance to template to display user information"""
     user = User.query.get(user_id)
 
-    return render_template("user-details.html", user=user)
+    posts = user.posts
+
+    posts.sort(key=lambda x: x.created_at)
+
+    return render_template("user-details.html", user=user, sorted_posts=posts)
 
 
 @app.route('/users/<user_id>/edit')
@@ -98,11 +102,11 @@ def edit_user(user_id):
     return redirect(f"/users")
 
 
-@app.route('/users/<user_id>/delete', methods=["POST"])
+@app.route('/users/<user_id>/delete', methods=['POST'])
 def delete_user(user_id):
     """deletes user from database, flashes message and redirects to user list"""
     user_base_query = User.query.filter(User.id == user_id)
-    user = User.query.filter(User.id == user_id).one()
+    user = user_base_query.one()
     flash(f"{user.first_name} {user.last_name} has been deleted!", "danger")
     user_base_query.delete()
     db.session.commit()
@@ -142,3 +146,36 @@ def handle_add_post_form_submission(user_id):
 def post(post_id):
     post = Post.query.get(post_id)
     return render_template('post-details.html', post=post)
+
+
+@app.route('/posts/<post_id>/edit')
+def edit_post_form(post_id):
+
+    post = Post.query.get(post_id)
+    return render_template('edit-post.html', post=post)
+
+
+@app.route('/posts/<post_id>/edit', methods=["POST"])
+def edit_post(post_id):
+    title = request.form['title']
+    content = request.form['content']
+
+    post = Post.query.get(post_id)
+
+    post.title, post.content = title, content
+    db.session.commit()
+
+    flash('Post has been editted.', 'success')
+    return redirect(f'/posts/{post_id}')
+
+
+@app.route('/posts/<post_id>/delete', methods=['POST'])
+def delete_post(post_id):
+    post_base_query = Post.query.filter(Post.id == post_id)
+    post = post_base_query.one()
+    user = post.user
+    flash(f'{post.title} has been deleted!', 'danger')
+    post_base_query.delete()
+    db.session.commit()
+
+    return redirect(f'/users/{user.id}')

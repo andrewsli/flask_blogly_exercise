@@ -1,7 +1,8 @@
 .profile-pic {
     max-width: 100px;
     max-height: 100px;
-    float: left; 
+    float: left;
+    margin-right: 10px;
 }
 
 .post-content {
@@ -13,3 +14,7 @@
     max-height: 100px;
     float: left;
 } */
+
+.user-btn {
+    width: 100px;
+}
