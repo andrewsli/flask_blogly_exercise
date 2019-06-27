@@ -1,6 +1,7 @@
 from app import app
-from models import db, connect_db, User
+from models import db, connect_db, User, Post
 import unittest
+import datetime
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly-test'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -23,6 +24,18 @@ class MyAppIntegrationTestCase(unittest.TestCase):
             id=999,
         )
         db.session.add(user)
+        db.session.commit
+
+        post = Post(
+            id=999,
+            title='TEST_TITLE',
+            content='TEST_CONTENT',
+            created_at=datetime.datetime.now(),
+            user_id=999,
+        )
+
+        db.session.add(post)
+
         db.session.commit()
 
         self.client = app.test_client()
@@ -31,6 +44,9 @@ class MyAppIntegrationTestCase(unittest.TestCase):
     def tearDown(self):
         """Stuff to do after each test."""
 
+        db.session.rollback()
+
+        Post.query.delete()
         User.query.delete()
         db.session.commit()
 
@@ -63,7 +79,7 @@ class MyAppIntegrationTestCase(unittest.TestCase):
         result = self.client.get('/users/999')
 
         self.assertEqual(result.status_code, 200)
-        self.assertIn(b'<p>TEST LTEST</p>', result.data)
+        self.assertIn(b'<h3>TEST LTEST</h3>', result.data)
         self.assertIn(b'<a href="/users/999/edit"', result.data)
 
     def test_delete_user(self):
@@ -85,3 +101,43 @@ class MyAppIntegrationTestCase(unittest.TestCase):
         self.assertEqual(result.status_code, 200)
         self.assertNotIn(b'TEST LTEST', result.data)
         self.assertIn(b'GABE MICK', result.data)
+
+    def test_add_new_post(self):
+        result = self.client.post(
+            '/users/999/posts',
+            data={
+                'title': 'HELLO WORLD',
+                'content': 'GOOD-BYE',
+            },
+            follow_redirects=True
+            )
+
+        self.assertEqual(result.status_code, 200)
+        self.assertIn(b'HELLO WORLD', result.data)
+
+    def test_show_post(self):
+        result = self.client.get('/posts/999')
+        self.assertEqual(result.status_code, 200)
+        self.assertIn(b'TEST_CONTENT', result.data)
+
+    def test_edit_post(self):
+        result = self.client.post(
+            "/posts/999/edit",
+            data={
+                'title': 'EDITED_TITLE',
+                'content': 'EDITED_CONTENT',
+            },
+            follow_redirects=True
+            )
+        self.assertEqual(result.status_code, 200)
+        self.assertNotIn(b'TEST_TITLE', result.data)
+        self.assertIn(b'EDITED_TITLE', result.data)
+
+    def test_delete_post(self):
+        result = self.client.post(
+            "/posts/999/delete",
+            follow_redirects=True,
+            )
+
+        self.assertEqual(result.status_code, 200)
+        self.assertNotIn(b'<a href="/posts/999">', result.data)

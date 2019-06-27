@@ -50,7 +50,7 @@ class Post(db.Model):
 
     def __repr__(self):
         x = self
-        return f"<Post {x.id} {x.title} {x.created_at} {x.image_url} {x.user_id}>"
+        return f"<Post {x.id} {x.title} {x.created_at} {x.user_id}>"
     
     __tablename__ = "posts"
 

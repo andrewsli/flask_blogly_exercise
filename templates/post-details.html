@@ -10,7 +10,7 @@
 
     <a href="/posts/{{ post.id }}/edit" class="btn btn-info btn-sm">Edit</a>
     <a href="/users/{{ post.user.id }}" class="btn btn-secondary btn-sm">Cancel</a>
-    <form style="display: inline;" action="/posts/{{ post.id }}/delete" method="POST" class="form-inline">
+    <form class="d-inline" action="/posts/{{ post.id }}/delete" method="POST" class="form-inline">
         <button class="btn btn-danger btn-sm">Delete</button>
     </form>
     

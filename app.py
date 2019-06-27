@@ -108,6 +108,7 @@ def delete_user(user_id):
     user_base_query = User.query.filter(User.id == user_id)
     user = user_base_query.one()
     flash(f"{user.first_name} {user.last_name} has been deleted!", "danger")
+    Post.query.filter(Post.user_id == user.id).delete()
     user_base_query.delete()
     db.session.commit()
 
@@ -128,6 +129,10 @@ def handle_add_post_form_submission(user_id):
     title = request.form['title']
     content = request.form['content']
     created_at = datetime.datetime.now()
+
+    if title == "" or content == "":
+        flash(f'Please make sure to fill all forms.', 'danger')
+        return redirect(f'/users/{user_id}/posts/new')
 
     post = Post(
         title=title,

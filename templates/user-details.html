@@ -3,13 +3,6 @@
 {% block title %}BLOGLY TIME{% endblock %}
 
 {% block content %}
-    {% with messages = get_flashed_messages(with_categories=true) %}
-
-    {% for category, message in messages %}
-        <p class="alert alert-{{ category }}">{{ message }}</p>
-    {% endfor %}
-
-    {% endwith %}
 
     <div class="profile-pic mr-10"> 
         <img class="profile-pic" src="{{ user.image_url }}" alt="">
@@ -19,7 +12,7 @@
     <h3>{{ user.first_name }} {{ user.last_name }}</h3>
     <div>
         <a href="/users/{{ user.id }}/edit" class="btn btn-info btn-sm">Edit</a>
-        <form style="display: inline;" method="POST" action="/users/{{ user.id }}/delete">
+        <form class="d-inline" method="POST" action="/users/{{ user.id }}/delete">
             <button class="btn btn-danger btn-sm">Delete</button> 
         </form>
     </div>
