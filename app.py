@@ -117,8 +117,8 @@ def delete_user(user_id):
 def add_post_form(user_id):
     """Show form to add post for user"""
     user = User.query.get(user_id)
-
-    return render_template('add-post.html', user=user)
+    tags = Tag.query.all()
+    return render_template('add-post.html', user=user, tags=tags)
 
 
 @app.route('/users/<user_id>/posts', methods=['POST'])
@@ -126,6 +126,8 @@ def handle_add_post_form_submission(user_id):
     """handles post form submission"""
     title = request.form['title']
     content = request.form['content']
+    tag_ids = request.form.getlist('tag')
+   
     created_at = datetime.datetime.now()
 
     if not title or not content:
@@ -139,6 +141,15 @@ def handle_add_post_form_submission(user_id):
         user_id=user_id
     )
     db.session.add(post)
+    db.session.commit()
+  
+    for tag_id in tag_ids:
+        post_tag = PostTag(
+            post_id=post.id,
+            tag_id=int(tag_id),
+        )
+        db.session.add(post_tag)
+
     db.session.commit()
 
     flash(f'Your post {title} has been submitted.', 'success')
@@ -156,7 +167,8 @@ def post(post_id):
 def edit_post_form(post_id):
     """display post edit form"""
     post = Post.query.get(post_id)
-    return render_template('edit-post.html', post=post)
+    tags = Tag.query.all()
+    return render_template('edit-post.html', post=post, tags=tags)
 
 
 @app.route('/posts/<post_id>/edit', methods=["POST"])
@@ -164,12 +176,20 @@ def edit_post(post_id):
     """handle post edit form submission, redirects to editted post"""
     title = request.form['title']
     content = request.form['content']
-
+    tag_ids = request.form.getlist('tag')
     post = Post.query.get(post_id)
 
     post.title, post.content = title, content
     db.session.commit()
+    PostTag.query.filter_by(post_id=post_id).delete()
+    for tag_id in tag_ids:
+        post_tag = PostTag(
+            post_id=post.id,
+            tag_id=int(tag_id),
+        )
+        db.session.add(post_tag)
 
+    db.session.commit()
     flash('Post has been editted.', 'success')
     return redirect(f'/posts/{post_id}')
 
@@ -220,3 +240,5 @@ def show_tag(tag_id):
 @app.route('/tags/<tag_id>/edit')
 def edit_tag(tag_id):
     return render_template('/tags_templates/edit-tag.html')
+
+

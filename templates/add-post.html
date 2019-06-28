@@ -10,10 +10,17 @@
         <input type="text" name="title"><br><br>
         Content<br>
         <textarea name="content" rows="5" cols="33"></textarea>
-        <div>
+        <br>
+        {% for tag in tags %}
+            <input type="checkbox" name="tag" value="{{ tag.id }}">
+            {{ tag.name }}
+            <br>
+        {% endfor %}
+        <div class="mt-2">
             <button class="btn btn-primary btn-sm" formaction="/users/{{ user.id }}/posts" formmethod="POST">Add</button>
             <button class="btn btn-secondary btn-sm">Cancel</button>
         </div>
+        
         
     </form>
 

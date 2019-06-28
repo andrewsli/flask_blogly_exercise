@@ -78,10 +78,14 @@ class Post(db.Model):
     )
 
     user = db.relationship('User')
-    
+
     tags = db.relationship(
         'Tag',
         secondary='post_tags',
+    )
+    post_tags = db.relationship(
+        'PostTag',
+        backref='post',
     )
 
 
@@ -128,4 +132,9 @@ class Tag(db.Model):
     posts = db.relationship(
         'Post',
         secondary='post_tags',
+    )
+
+    post_tags = db.relationship(
+        'PostTag',
+        backref='tag',
     )
